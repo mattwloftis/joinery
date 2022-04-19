@@ -1,12 +1,14 @@
 Package: joinery
-Title: What the Package Does (One Line, Title Case)
+Title: Tools for joining social science data sets---especially text data
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+    person("Matt W.", "Loftis", , "mattwloftis@ps.au.dk", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0001-5502-6396"))
+Description: Eases the process of merging (primarily text) data used in social science research. joinery checks and cleans common identifiers like country names, years, political party names, names of institutions, etc. Once data are cleaned, joinery guides the user to aggregating or disaggregating the input datasets, executing final joins, and documenting those joins. See OPTED (opted.eu) project for principles and heuristics applied by joinery and for project updates.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
+Imports: 
+    magrittr
