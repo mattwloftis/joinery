@@ -15,7 +15,7 @@
 #'
 
 
-disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL, fuzzy = TRUE) {
+disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL) {
 
   #############################################################
   ## SANITY CHECK INPUT: x
@@ -77,7 +77,7 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL, fuzz
       stop("Cannot resolve origin format of country name or identifier. Try explicitly specifying origin format & checking country identifiers for errors/misspellings.")
     }
 
-    cat(paste0("\nCountrycode origin format not provided. Assuming: ", "\"", clean_origin, "\" (See countrycode package)"))
+    cat(paste0("\nCountrycode origin format not provided. Assuming: ", "\"", clean_origin, "\" (See countrycode package)\n"))
   }
 
 
@@ -125,7 +125,7 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL, fuzz
       dplyr::mutate(jnry_year = Sys.Date() %>% str_extract("^\\d{4}"))
 
     # warn user that year --> current year
-    warning("No year provided. Defaulting to current calendar year.")
+    warning("No year provided. Defaulting to current calendar year.\n")
 
   } else if (!is.atomic(year) || length(year) == 0) {
 
@@ -144,7 +144,7 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL, fuzz
     }
 
     # if no other errors, put the year into the data (x)
-    x <- x %>% mutate(jnry_year = year)
+    x <- x %>% dplyr::mutate(jnry_year = year)
 
   } else if (is.character(year) && (length(year) == 1)) { # CASE: character
 
@@ -155,7 +155,7 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL, fuzz
     if (!is.numeric(year) || !all(str_length(year) == 4)) stop("year not provided correctly -- must be numeric and consist of only four-digit numbers")
 
     # create a new column for jnry_year -- wasteful, but... efficient and doesn't rename user variables
-    x <- x %>% mutate(jnry_year = year)
+    x <- x %>% dplyr::mutate(jnry_year = year)
 
   } else {
 
@@ -194,13 +194,15 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL, fuzz
   #   2) filter to countries in target data
   #   3) filter to years (potentially) relevant to target data
   #   4) stretch years (i.e. from PF "from-->to" format to one row per year * party)
-  pfcp <- readr::read_csv("https://partyfacts.herokuapp.com/download/core-parties-csv/") %>%
+  pfcp <- read.csv(file = "https://partyfacts.herokuapp.com/download/core-parties-csv/",
+                   encoding = "UTF-8") %>%
+    tibble::as_tibble() %>%
     dplyr::filter(country %in% x$jnry_country) %>%
     dplyr::filter(is.na(year_last) | year_last >= min(x$jnry_year)) %>%
     dplyr::mutate(year_first = ifelse(year_first < min(x$jnry_year),
                                       min(x$jnry_year),
                                       year_first)) %>%
-    stretch_pf
+    stretch_pf()
   #############################################################
 
 
@@ -216,6 +218,7 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL, fuzz
 
   # condense INPUT DATA over unique party-year-country intersections
   # this will be matched to PF
+  options(dplyr.summarise.inform = FALSE)
   cons_refs <- x %>%
     dplyr::group_by(across({{ grpng_vars }})) %>%
     dplyr::summarize() %>%
@@ -272,7 +275,7 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL, fuzz
       )
 
     # report progress
-    cat("All party names have exact matches in Party Facts.")
+    cat("\nAll party names have exact matches in Party Facts.\n")
 
     ## return orig data w/jnry ctry+year variables & partyfacts_id
     return(x)
@@ -285,13 +288,13 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL, fuzz
 
     # Catch scattered exact matches, if any
     exact_successes <- pfcp %>%
-      select(starts_with('name')) %>%
+      dplyr::select(starts_with('name')) %>%
       purrr::map(function(xx) unique(cons_refs$opn) %in% xx)
 
     # which PF vars had matches?
     pf_name_hits <- exact_successes %>%
       purrr::map(function(xx) sum(xx)) %>%
-      unlist
+      unlist()
 
     # WERE THERE ANY EXACT MATCHES AT ALL???
     if (sum(pf_name_hits) > 0) {
@@ -329,14 +332,14 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL, fuzz
 
 
       # Report progress & warn about heuristic matching
-      cat(stringr::str_c("Found exact matches for ", sum(cons_refs$match_exact), " of ", nrow(cons_refs), " party x year observations.\n"))
-      cat("Party identifier (party_ref) had some party names without exact match in Party Facts data.\n---Trying heuristic matching (English only)--")
+      cat(stringr::str_c("\n-----------------------------------------------------------\nFound ", sum(cons_refs$match_exact), " exact matches of ", nrow(cons_refs), "\nparty x year observations.\n-----------------------------------------------------------\n"))
+      cat("\nParty identifier (party_ref) had some party names without exact match in Party Facts data.\n\n---Trying heuristic matching (English only)---\n")
     } else {
       # note in 'cons_refs' there are 0 exact matches
       cons_refs <- cons_refs %>% dplyr::mutate(match_exact = F)
 
       # warn user about heuristic matching
-      cat("Party identifier (party_ref) had NO exact matches in Party Facts data.\n---Trying heuristic matching (English only)--")
+      cat("\nParty identifier (party_ref) had NO exact matches in Party Facts data.\n\n---Trying heuristic matching (English only)---\n")
     }
 
 
@@ -345,15 +348,15 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL, fuzz
     ## HEURISTIC MATCHING w/regex reconstruction of party names
 
     # regex reconstruct TARGET party names
-    heur_par_target <- setNames(object = as.list(unique(cons_refs$opn[!cons_refs$match_exact])),
+    heur_par_target <- stats::setNames(object = as.list(unique(cons_refs$opn[!cons_refs$match_exact])),
                                 nm = unique(cons_refs$opn[!cons_refs$match_exact])) %>%
       purrr::map(party_name_heuristics)
 
     # apply heuristic regex tranforms & check success by party
-    any_heur_success <- heur_par_target %>% map_lgl(
+    any_heur_success <- heur_par_target %>% purrr::map_lgl(
       function(p_heuristics) {
         any(
-          purrr::map_lgl(pfcp %>% select(starts_with('name')),
+          purrr::map_lgl(pfcp %>% dplyr::select(starts_with('name')),
                          function(pf_names) any(p_heuristics %in% pfcp_fast_munge(pf_names)))
         )
       }
@@ -468,7 +471,7 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL, fuzz
         to.match <- to.match %>%
           dplyr::select(-partyfacts_id) %>%
           dplyr::left_join(pfcp %>%
-                             select({{ pf_mtch_vars }}),
+                             dplyr::select({{ pf_mtch_vars }}),
                            by = pf_mtch_vars[1:3]) # is this 'by' field dangerous? Only used to suppress messages and avoid incidental errors
 
         # rebuild 'cons_refs' by stacking 'keep' with 'to.match'
@@ -509,17 +512,17 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL, fuzz
         cons_refs <- keep %>% dplyr::bind_rows(to.match)
       }
     } else {
-      cons_refs <- cons_refs %>% mutate(match_heur = FALSE)
+      cons_refs <- cons_refs %>% dplyr::mutate(match_heur = FALSE)
     }
 
 
     #############################################################
     # Check if we're done after completing heuristic matching
-    if (!fuzzy | all(cons_refs$match_exact | cons_refs$match_heur)) { # CASE: YES, COMPLETE AFTER HEURISTIC MATCHING
+    if (all(cons_refs$match_exact | cons_refs$match_heur)) { # CASE: YES, COMPLETE AFTER HEURISTIC MATCHING
 
       #############################################################
       ## REPORT PROGRESS ON EXACT & HEURISTIC MATCHING METHODS
-      cat(stringr::str_c("Found exact matches for ", sum(cons_refs$match_exact), " and heuristic matches for ", sum(cons_refs$match_heur)," of ", nrow(cons_refs), " party x year observations.\n"))
+      cat(stringr::str_c("\n-----------------------------------------------------------\nFound ", sum(cons_refs$match_exact), " exact matches and\n", sum(cons_refs$match_heur)," heuristic matches of ", nrow(cons_refs), "\nparty x year observations.\n-----------------------------------------------------------\n"))
 
 
       #############################################################
@@ -555,7 +558,7 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL, fuzz
       }
 
       cons_refs <- cons_refs %>%
-        select(-{{ pf_names }})
+        dplyr::select(-{{ pf_names }})
 
       # merging vars
       mrg_vars <- c(names(cons_refs)[1:3],
@@ -563,9 +566,9 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL, fuzz
 
       # execute merge
       x <- x %>%
-        left_join(
+        dplyr::left_join(
           cons_refs %>%
-            select({{ mrg_vars }}),
+            dplyr::select({{ mrg_vars }}),
           by = mrg_vars[1:3]
         )
 
@@ -573,16 +576,15 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL, fuzz
       return(x)
 
 
-      # close NO fuzzy matching OR complete after heuristic matching
+      # close complete after heuristic matching
     } else { # CASE: NO, NOT DONE
-      # Only runs if fuzzy matching requested
 
       #############################################################
       #############################################################
       ## REPORT PROGRESS ON BOTH MATCHING METHODS ATTEMPTED SO FAR
       ## WARN THAT WE'RE MOVING TO FUZZY MATCHING NOW
-      cat(stringr::str_c("Found exact matches for ", sum(cons_refs$match_exact), " and heuristic matches for ", sum(cons_refs$match_heur)," of ", nrow(cons_refs), " party x year observations.\n"))
-      cat("Party identifier (party_ref) had some party names without exact or heuristic matches in Party Facts data.\n---Trying fuzzy matching---")
+      cat(stringr::str_c("\n-----------------------------------------------------------\nFound ", sum(cons_refs$match_exact), " exact matches and\n", sum(cons_refs$match_heur)," heuristic matches of ", nrow(cons_refs), " \nparty x year observations.\n-----------------------------------------------------------\n"))
+      cat("\nParty identifier (party_ref) had some party names without exact\nor heuristic matches in Party Facts data.\n\n---Trying fuzzy matching---\n")
       #############################################################
       #############################################################
 
@@ -590,14 +592,14 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL, fuzz
 
       # get parties still lacking matches
       unmatched <- cons_refs %>%
-        mutate(match = match_exact | match_heur) %>%
-        group_by(opn) %>%
-        summarize(match = max(match)) %>%
-        filter(match == 0) %>%
-        pull(opn)
+        dplyr:: mutate(match = match_exact | match_heur) %>%
+        dplyr::group_by(opn) %>%
+        dplyr::summarize(match = max(match)) %>%
+        dplyr::filter(match == 0) %>%
+        dplyr::pull(opn)
 
       # get their heuristic variations [is this step necessary? Seems prudent, but invites disagreements]
-      fuzz_par_target <- setNames(object = as.list(unmatched),
+      fuzz_par_target <- stats::setNames(object = as.list(unmatched),
                                   nm = unmatched) %>%
         purrr::map(party_name_heuristics)
 
@@ -713,7 +715,7 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL, fuzz
         dplyr::select(-partyfacts_id, -wikipedia) %>%
         dplyr::left_join(
           pfcp %>%
-            select({{ pf_mtch_vars }}),
+            dplyr::select({{ pf_mtch_vars }}),
           by = pf_mtch_vars[1:3]
           ) %>%
         dplyr::mutate(match_fuzzy = !is.na(partyfacts_id))
@@ -722,7 +724,10 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL, fuzz
       cons_refs <- keep %>% dplyr::bind_rows(to.match)
 
       # report progress
-      cat(stringr::str_c("Found ", sum(cons_refs$match_exact), " exact matches, ", sum(cons_refs$match_heur)," heuristic matches, and ", sum(cons_refs$match_fuzzy), " fuzzy matches of ", nrow(cons_refs), " party x year observations.\n"))
+      cat(stringr::str_c("\n-----------------------------------------------------------\nFound ",
+                         sum(cons_refs$match_exact), " exact matches,\n", sum(cons_refs$match_heur),
+                         " heuristic matches, and\n", sum(cons_refs$match_fuzzy), " fuzzy matches of\n",
+                         nrow(cons_refs), " party x year observations.\n-----------------------------------------------------------\n"))
 
 
       #############################################################
@@ -768,9 +773,9 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL, fuzz
 
       # execute merge
       x <- x %>%
-        left_join(
+        dplyr::left_join(
           cons_refs %>%
-            select({{ mrg_vars }}),
+            dplyr::select({{ mrg_vars }}),
           by = mrg_vars[1:3]
         )
 

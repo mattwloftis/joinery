@@ -2,18 +2,26 @@
 % Please edit documentation in R/disamb_party.R
 \name{disamb_party}
 \alias{disamb_party}
-\title{Disambiguate political party names}
+\title{Disambiguate political party names + match to Party Facts ID}
 \usage{
-disamb_party(x, party_ref = y, country = NULL, year = NULL, origin = NULL)
+disamb_party(x, party_ref, country, year = NULL, origin = NULL)
 }
 \arguments{
-\item{origin}{}
+\item{x}{Data frame containing party}
+
+\item{party_ref}{A string identifying the variable in the data, \code{x}, containing political party names or other party identifiers}
+
+\item{country}{A string identifying the country, if single-country data, or vector of strings identifying the country of each observation if multi-country data.}
+
+\item{year}{A four-digit numeric identifying the year of the data, or a string identifying the variable in \code{x} containing the year variable (four-digit numeric). If \code{year = NULL}, assumes the current calendar year.}
+
+\item{origin}{A string identifying the origin format of country names (see \code{countrycode} package). If \code{origin = NULL}, attempts to resolve the origin format automatically.}
 }
 \value{
-A tibble, with a new column for Party Facts id
+A tibble, \code{x}, with a new column for Party Facts id
 }
 \description{
-Disambiguate political party names
+Disambiguate political party names + match to Party Facts ID
 }
 \examples{
 
