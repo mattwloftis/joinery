@@ -1,0 +1,47 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# joinery
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+`joinery` is a set of tools to ease the process of merging (primarily text) data used in political science research. joinery checks and cleans common identifiers like country names, political party names, names of institutions, etc. Once data are cleaned, joinery guides the user to aggregating or disaggregating the input datasets, executing final joins, and documenting those joins. See [OPTED](https://opted.eu/) project for principles and heuristics applied by joinery and for project updates.
+
+## Installation
+
+You can install the development version of joinery from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("mattwloftis/joinery")
+```
+
+## Example
+
+This is a basic example which shows you how to disambiguate party names in a dataset from the *Comparative Agendas Project*:
+
+```{r example}
+library(joinery)
+## basic example code
+
+spain_cap_manifestos <- read.csv("https://comparativeagendas.s3.amazonaws.com/datasetfiles/Party_Manifestos_CAP_Web_csv.csv", fileEncoding = "UTF-8")
+
+spain_cap_manifestos <- disamb_party(x = spain_cap_manifestos,
+                                     party_ref = "politicalparty",
+                                     country = "Spain",
+                                     year = "year",
+                                     origin = NULL)
+```

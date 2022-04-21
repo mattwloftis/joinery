@@ -15,4 +15,7 @@ Imports:
     magrittr,
     purrr,
     stringr,
-    tibble
+    tibble,
+    tidyr,
+    tidyselect,
+    utils

@@ -5,7 +5,7 @@ party_name_heuristics <- function(xx) {
   # start by spliting on any '/'s and replacing the party name
   # with both options
   if (length(xx) == 1 & stringr::str_detect(xx, "/")) {
-    xx <- stringr::str_split(xx, "/") %>% unlist %>% stringr::str_trim()
+    xx <- stringr::str_split(xx, "/") %>% unlist() %>% stringr::str_trim()
   }
 
   # define regular expressions for heuristic transformations
@@ -14,8 +14,9 @@ party_name_heuristics <- function(xx) {
     "\\b[Tt]he\\b ?",
     "Democratic",
     "\\'",
-    "’",
-    "[Pp]eoples"
+    "Democrats",
+    "[Pp]eoples",
+    "[[:punct:]]"
   )
 
   # define replacements for respective regexs
@@ -24,8 +25,9 @@ party_name_heuristics <- function(xx) {
     "",
     "Democrats",
     "",
-    "",
-    "People's"
+    "Democratic",
+    "People's",
+    ""
   )
 
   # append all new party name formulations to vector of heuristic transformations

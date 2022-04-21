@@ -18,11 +18,12 @@ disamb_party(x, party_ref, country, year = NULL, origin = NULL)
 \item{origin}{A string identifying the origin format of country names (see \code{countrycode} package). If \code{origin = NULL}, attempts to resolve the origin format automatically.}
 }
 \value{
-A tibble, \code{x}, with a new column for Party Facts id
+A tibble, \code{x}, with new columns for Party Facts id and information on the matching process
 }
 \description{
 Disambiguate political party names + match to Party Facts ID
 }
 \examples{
+
 
 }
