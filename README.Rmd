@@ -44,4 +44,6 @@ spain_cap_manifestos <- disamb_party(x = spain_cap_manifestos,
                                      country = "Spain",
                                      year = "year",
                                      origin = NULL)
+
+table(spain_cap_manifestos$politicalparty, spain_cap_manifestos$jnry_match)
 ```

@@ -59,4 +59,10 @@ spain_cap_manifestos <- disamb_party(x = spain_cap_manifestos,
 #> -----------------------------------------------------------
 #> 
 #> Note that one or more NAs were present in party, country, or year variables.
+
+table(spain_cap_manifestos$politicalparty, spain_cap_manifestos$jnry_match)
+#>       
+#>        exact heuristic
+#>   PP       0      4155
+#>   PSOE 12125         0
 ```

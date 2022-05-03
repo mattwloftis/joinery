@@ -1,7 +1,7 @@
 
 #' Disambiguate political party names + match to Party Facts ID
 #'
-#' @param x Data frame containing party
+#' @param x Data frame in which each observation relates to one political party
 #' @param party_ref A string identifying the variable in the data, \code{x}, containing political party names or other party identifiers
 #' @param country A string identifying the country, if single-country data, or vector of strings identifying the country of each observation if multi-country data.
 #' @param year A four-digit numeric identifying the year of the data, or a string identifying the variable in \code{x} containing the year variable (four-digit numeric). If \code{year = NULL}, assumes the current calendar year.
