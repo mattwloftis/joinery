@@ -113,11 +113,11 @@ returns a data frame with several new variables:
     user can review the match for accuracy.
 -   `jnry_match` - The nature of the match for each observation. This
     will be one of:
--   `exact` - the party name, country, and year lead to an exact match
-    with Party Facts
--   `heuristic` - minor changes to the party name lead to a match
--   `fuzzy` - the input party name, or minor transformations to it, are
-    very similar to a match
+    -   `exact` - the party name, country, and year lead to an exact
+        match with Party Facts
+    -   `heuristic` - minor changes to the party name lead to a match
+    -   `fuzzy` - the input party name, or minor transformations to it,
+        are very similar to a match
 -   `jnry_country` - disambiguated country name (`joinery` uses the
     tools in the
     [`countrycode`](https://github.com/vincentarelbundock/countrycode)
