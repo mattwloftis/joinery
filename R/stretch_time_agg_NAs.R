@@ -67,7 +67,7 @@ stretch_time_agg_NAs <- function(clpsd,
           tidyr::unnest(jnry_quarter)
       } ) %>%
       dplyr::bind_rows() %>%
-      dplyr::select(-starts_with("jnry_time")) %>%
+      dplyr::select(-tidyselect::starts_with("jnry_time")) %>%
       dplyr::mutate_all(stringr::str_trim)
 
     # fix data types (thanks 'vroom')
@@ -75,7 +75,7 @@ stretch_time_agg_NAs <- function(clpsd,
       class(to.stretch[[nume]]) <- vroom::guess_type(to.stretch[[nume]]) %>%
         class %>%
         `[`(1) %>%
-        str_replace("^collector_", "")
+        stringr::str_replace("^collector_", "")
     }
 
     return(to.stretch)
@@ -108,7 +108,7 @@ stretch_time_agg_NAs <- function(clpsd,
           tidyr::unnest(jnry_month)
       } ) %>%
       dplyr::bind_rows() %>%
-      dplyr::select(-starts_with("jnry_time")) %>%
+      dplyr::select(-tidyselect::starts_with("jnry_time")) %>%
       dplyr::mutate_all(stringr::str_trim)
 
     # fix data types (thanks 'vroom')
@@ -116,7 +116,7 @@ stretch_time_agg_NAs <- function(clpsd,
       class(to.stretch[[nume]]) <- vroom::guess_type(to.stretch[[nume]]) %>%
         class %>%
         `[`(1) %>%
-        str_replace("^collector_", "")
+        stringr::str_replace("^collector_", "")
     }
 
     return(to.stretch)
@@ -127,8 +127,8 @@ stretch_time_agg_NAs <- function(clpsd,
   ##---------------------------------------------------------##
   if (granularity == "week") {
     to.stretch <- x %>%
-      ungroup(jnry_week) %>%
-      summarize(
+      dplyr::ungroup(jnry_week) %>%
+      dplyr::summarise(
         jnry_time_last = max(.data[[time]]),
         jnry_time_first = min(.data[[time]])
       ) %>%
@@ -138,9 +138,9 @@ stretch_time_agg_NAs <- function(clpsd,
           k %>%
             t %>%
             tibble::as_tibble() %>%
-            mutate(
-              jnry_time_last = ymd(jnry_time_last),
-              jnry_time_first = ymd(jnry_time_first)
+            dplyr::mutate(
+              jnry_time_last = lubridate::ymd(jnry_time_last),
+              jnry_time_first = lubridate::ymd(jnry_time_first)
             )
         }
       )
@@ -154,7 +154,7 @@ stretch_time_agg_NAs <- function(clpsd,
           tidyr::unnest(jnry_week)
       } ) %>%
       dplyr::bind_rows() %>%
-      dplyr::select(-starts_with("jnry_time")) %>%
+      dplyr::select(-tidyselect::starts_with("jnry_time")) %>%
       dplyr::mutate_all(stringr::str_trim)
 
     # fix data types (thanks 'vroom')
@@ -162,7 +162,7 @@ stretch_time_agg_NAs <- function(clpsd,
       class(to.stretch[[nume]]) <- vroom::guess_type(to.stretch[[nume]]) %>%
         class %>%
         `[`(1) %>%
-        str_replace("^collector_", "")
+        stringr::str_replace("^collector_", "")
     }
 
     return(to.stretch)
@@ -183,9 +183,9 @@ stretch_time_agg_NAs <- function(clpsd,
           k %>%
             t %>%
             tibble::as_tibble() %>%
-            mutate(
-              jnry_time_first = ymd(jnry_time_first),
-              jnry_time_last = ymd(jnry_time_last)
+            dplyr::mutate(
+              jnry_time_first = lubridate::ymd(jnry_time_first),
+              jnry_time_last = lubridate::ymd(jnry_time_last)
             )
         }
       )
@@ -199,7 +199,7 @@ stretch_time_agg_NAs <- function(clpsd,
           tidyr::unnest(jnry_day)
       } ) %>%
       dplyr::bind_rows() %>%
-      dplyr::select(-starts_with("jnry_time")) %>%
+      dplyr::select(-tidyselect::starts_with("jnry_time")) %>%
       dplyr::mutate_all(stringr::str_trim)
 
     # fix data types (thanks 'vroom')
@@ -207,7 +207,7 @@ stretch_time_agg_NAs <- function(clpsd,
       class(to.stretch[[nume]]) <- vroom::guess_type(to.stretch[[nume]]) %>%
         class %>%
         `[`(1) %>%
-        str_replace("^collector_", "")
+        stringr::str_replace("^collector_", "")
     }
 
     return(to.stretch)

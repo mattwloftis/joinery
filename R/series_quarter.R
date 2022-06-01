@@ -18,7 +18,7 @@ series_quarter <- function(first, last) {
   too.early <- (helper$yrs == fyear) & (helper$qs < fq)
   too.late <- (helper$yrs == lyear) & (helper$qs > lq)
 
-  helper <- helper %>% filter(!too.early & !too.late)
+  helper <- helper %>% dplyr::filter(!too.early & !too.late)
 
   series <- paste0(helper$yrs, "-Q", helper$qs)
 

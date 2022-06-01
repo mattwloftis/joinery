@@ -9,16 +9,43 @@ disamb_party(x, party_ref, country, year = NULL, origin = NULL)
 \arguments{
 \item{x}{Data frame in which each observation relates to one political party}
 
-\item{party_ref}{A string identifying the variable in the data, \code{x}, containing political party names or other party identifiers}
+\item{party_ref}{A string identifying the variable in the data, \code{x},
+containing political party names or other party identifiers}
 
-\item{country}{A string identifying the country, if single-country data, or vector of strings identifying the country of each observation if multi-country data.}
+\item{country}{A string identifying the country, if single-country data, or
+vector of strings identifying the country of each observation if
+multi-country data.}
 
-\item{year}{A four-digit numeric identifying the year of the data, or a string identifying the variable in \code{x} containing the year variable (four-digit numeric). If \code{year = NULL}, assumes the current calendar year.}
+\item{year}{A four-digit numeric identifying the year of the data, or a
+string identifying the variable in \code{x} containing the year (four-digit
+numeric) or date (\code{Date} class) variable.
+If \code{year = NULL}, assumes the current calendar
+year.}
 
-\item{origin}{A string identifying the origin format of country names (see \code{countrycode} package). If \code{origin = NULL}, attempts to resolve the origin format automatically.}
+\item{origin}{A string identifying the origin format of country names
+(see \code{countrycode} package). If \code{origin = NULL}, attempts to
+resolve the origin format automatically.}
 }
 \value{
-A tibble, \code{x}, with new columns for Party Facts id and information on the matching process
+A tibble, \code{x}, with new columns for Party Facts id and
+information on the matching process. New columns include:
+\itemize{
+\item \code{partyfacts_id} - unique numeric id of each recognized political
+party in the Party Facts
+\item \code{partyfacts_name} - name of each recognized political party in
+the Party Facts data
+\item \code{jnry_match} - Nature of the match for each observation.
+\code{exact} matches are perfect matches for the party name, country, and
+year. \code{heuristic} matches find a match after minor alterations to the
+party name. \code{fuzzy} matches are cases where the party name, or the
+heuristic-altered party name, is very close to a match.
+\item \code{wikipedia} - In the case of \code{heuristic} or \code{fuzzy}
+matches, provides a link to the Wikipedia page of the presumed match
+for verification.
+\item \code{jnry_country} - disambiguated country name (see also
+\code{countrycode})
+\item \code{jnry_year} - The four-digit year of each observation.
+}
 }
 \description{
 Disambiguate political party names + match to Party Facts ID

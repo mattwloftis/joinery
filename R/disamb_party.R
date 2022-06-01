@@ -2,12 +2,44 @@
 #' Disambiguate political party names + match to Party Facts ID
 #'
 #' @param x Data frame in which each observation relates to one political party
-#' @param party_ref A string identifying the variable in the data, \code{x}, containing political party names or other party identifiers
-#' @param country A string identifying the country, if single-country data, or vector of strings identifying the country of each observation if multi-country data.
-#' @param year A four-digit numeric identifying the year of the data, or a string identifying the variable in \code{x} containing the year variable (four-digit numeric). If \code{year = NULL}, assumes the current calendar year.
-#' @param origin A string identifying the origin format of country names (see \code{countrycode} package). If \code{origin = NULL}, attempts to resolve the origin format automatically.
 #'
-#' @return A tibble, \code{x}, with new columns for Party Facts id and information on the matching process
+#' @param party_ref A string identifying the variable in the data, \code{x},
+#' containing political party names or other party identifiers
+#'
+#' @param country A string identifying the country, if single-country data, or
+#' vector of strings identifying the country of each observation if
+#' multi-country data.
+#'
+#' @param year A four-digit numeric identifying the year of the data, or a
+#' string identifying the variable in \code{x} containing the year (four-digit
+#' numeric) or date (\code{Date} class) variable.
+#' If \code{year = NULL}, assumes the current calendar
+#' year.
+#'
+#' @param origin A string identifying the origin format of country names
+#' (see \code{countrycode} package). If \code{origin = NULL}, attempts to
+#' resolve the origin format automatically.
+#'
+#' @return A tibble, \code{x}, with new columns for Party Facts id and
+#' information on the matching process. New columns include:
+#' \itemize{
+#'   \item \code{partyfacts_id} - unique numeric id of each recognized political
+#'   party in the Party Facts
+#'   \item \code{partyfacts_name} - name of each recognized political party in
+#'   the Party Facts data
+#'   \item \code{jnry_match} - Nature of the match for each observation.
+#'   \code{exact} matches are perfect matches for the party name, country, and
+#'   year. \code{heuristic} matches find a match after minor alterations to the
+#'   party name. \code{fuzzy} matches are cases where the party name, or the
+#'   heuristic-altered party name, is very close to a match.
+#'   \item \code{wikipedia} - In the case of \code{heuristic} or \code{fuzzy}
+#'   matches, provides a link to the Wikipedia page of the presumed match
+#'   for verification.
+#'   \item \code{jnry_country} - disambiguated country name (see also
+#'   \code{countrycode})
+#'   \item \code{jnry_year} - The four-digit year of each observation.
+#' }
+#'
 #' @export
 #'
 #' @importFrom magrittr `%>%`
@@ -34,7 +66,7 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL) {
 
   # country is a single string or vector of strings (length = nrow(x))
   if (!(is.atomic(country) &&
-        is.character(country))) top("country must be a string identifying the country of the data or a vector of strings identifying the country of each observation in the data.")
+        is.character(country))) stop("country must be a string identifying the country of the data or a vector of strings identifying the country of each observation in the data.")
 
   if (!xor(length(country) == 1L,
            length(country) == nrow(x))) stop("country must be a string identifying the country of the data or a vector of strings identifying the country of each observation in the data.")
@@ -299,6 +331,9 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL) {
 
     # if year is character scalar, retrieve that column in the data
     year <- x[[year]]
+
+    # deal with 'Date' format years
+    if (lubridate::is.instant(year)) year <- lubridate::year(year) %>% as.numeric
 
     # catch years not four digits
     if (!is.numeric(year) || !all(stringr::str_length(year) == 4)) stop("year not provided correctly -- must be numeric and consist of only four-digit numbers")

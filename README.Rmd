@@ -18,7 +18,14 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-`joinery` is a set of tools to ease the process of merging (primarily text) data used in political science research. joinery checks and cleans common identifiers like country names, political party names, names of institutions, etc. Once data are cleaned, joinery guides the user to aggregating or disaggregating the input datasets, executing final joins, and documenting those joins. See [OPTED](https://opted.eu/) project for principles and heuristics applied by joinery and for project updates.
+`joinery` is a set of tools to ease the process of merging (primarily text) data used in political science research. `joinery` can help with the following common tasks:
+
+- check and cleans common identifiers like country names, political party names, names of institutions, etc.
+- aggregate or disaggregate the input datasets
+- execute joins
+- document each data transformation
+
+See the [OPTED](https://opted.eu/) project for principles and heuristics applied by joinery and for project updates.
 
 ## Installation
 
@@ -29,21 +36,110 @@ You can install the development version of joinery from [GitHub](https://github.
 devtools::install_github("mattwloftis/joinery")
 ```
 
-## Example
+## Example: Disambiguating party names
 
 This is a basic example which shows you how to disambiguate party names in a dataset from the *Comparative Agendas Project*:
 
 ```{r example}
 library(joinery)
-## basic example code
 
+## basic example of disambiguating party names
+
+# Comparative Agendas Project data on Spanish political party manifestos
 spain_cap_manifestos <- read.csv("https://comparativeagendas.s3.amazonaws.com/datasetfiles/Party_Manifestos_CAP_Web_csv.csv", fileEncoding = "UTF-8")
 
-spain_cap_manifestos <- disamb_party(x = spain_cap_manifestos,
-                                     party_ref = "politicalparty",
-                                     country = "Spain",
-                                     year = "year",
-                                     origin = NULL)
+# disambiguate the party names
+spain_cap_manifestos <- spain_cap_manifestos %>% 
+  disamb_party(party_ref = "politicalparty",
+               country = "Spain",
+               year = "year",
+               origin = NULL)
 
+# review the types of matches achieved
 table(spain_cap_manifestos$politicalparty, spain_cap_manifestos$jnry_match)
+
+# see Wikipedia links for the more uncertain 'heuristic' matches
+spain_cap_manifestos %>% 
+  dplyr::filter(jnry_match %in% 'heuristic') %>% 
+  dplyr::select(politicalparty, partyfacts_name, wikipedia)
 ```
+
+The `disamb_party` function takes a data frame as input. The user identifies the variable containing political party names or acronyms and provides either the country and year of each observation or identifies the variables containing those information. With that, the function returns a data frame with several new variables:
+
+- `partyfacts_id` - the unique numeric id of each recognized political party in the [Party Facts](https://partyfacts.herokuapp.com/). The Party Facts id allows users to link their data to the Party Facts data, which in turn, allows users to link their data to dozens of political science datasets.
+- `partyfacts_name` - the name of each recognized political party in the Party Facts data
+- `wikipedia` - In the case of heuristic or fuzzy matches, `joinery` returns a link to the Wikipedia page of the presumed match so the user can review the match for accuracy.
+- `jnry_match` - The nature of the match for each observation. This will be one of:
+- `exact` - the party name, country, and year lead to an exact match with Party Facts
+- `heuristic` - minor changes to the party name lead to a match
+- `fuzzy` - the input party name, or minor transformations to it, are very similar to a match
+- `jnry_country` - disambiguated country name (`joinery` uses the tools in the [`countrycode`](https://github.com/vincentarelbundock/countrycode) package to identify country names, and includes some heuristics to address mismatches)
+- `jnry_year` - the four-digit year of each observation
+
+
+## Example: Aggregating data over time
+
+Harmonizing time scales can be a tedious part of preparing to join data sets. `joinery` eases this step by executing aggregations for multiple common time scales and enforcing ISO 8601 time formatting standards to ease later joins. `aggregate_time` has several useful features:
+
+- accepts time inputs in multiple formats (date, month, week, etc.)
+- can aggregate data to user-provided adhoc time scales
+- if needed, it will fill time series with missing data for time points not represented in the input data
+
+Here are some basic examples of how to use `joinery` to aggregate data to different time scales.
+
+```{r example2}
+library(joinery)
+
+## basic example of aggregating data
+
+# pull in the NYC flight data set & create a date-time variable
+nycf <- nycflights13::flights %>%
+  dplyr::filter(!is.na(arr_time)) %>%
+  dplyr::mutate(
+    arr_string = stringr::str_c(stringr::str_pad(string = month, width = 2, side = "left", pad = "0"),
+                                stringr::str_pad(string = day, width = 2, side = "left", pad = "0"), year,
+                                stringr::str_pad(string = arr_time, width = 4, side = 'left', pad = '0')),
+    arrival = lubridate::mdy_hm(arr_string, tz = "EST"))
+
+# mean of all numeric variables by month
+nycf %>% 
+  aggregate_time(time = 'arrival', 
+                 granularity = 'month', 
+                 aggregation = 'mean')
+
+# count of flights by week & flight origin
+nycf %>% 
+  aggregate_time(time = 'arrival', 
+                 grouping_vars = 'origin',
+                 granularity = 'week', 
+                 aggregation = 'count')
+
+# maximum of all numeric variables by quarter & flight origin
+nycf %>% 
+  aggregate_time(time = 'arrival', 
+                 grouping_vars = 'origin',
+                 granularity = 'quarter', 
+                 aggregation = 'max')
+
+# minimum of all numeric variables by quarter & flight origin & flight carrier
+nycf %>% 
+  aggregate_time(time = 'arrival', 
+                 grouping_vars = c('origin', 'carrier'),
+                 granularity = 'quarter', 
+                 aggregation = 'max')
+
+# sum of all numeric variables and count of flights by quarter
+# (just chain together and join calls)
+nycf %>% 
+  aggregate_time(time = 'arrival', 
+                 granularity = 'quarter', 
+                 aggregation = 'sum') %>% 
+  dplyr::left_join(
+    nycf %>% 
+      aggregate_time(time = 'arrival', 
+                     granularity = 'quarter', 
+                     aggregation = 'count')
+  )
+```
+
+

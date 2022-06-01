@@ -98,6 +98,7 @@
 #' @export
 #'
 #' @importFrom magrittr `%>%`
+#' @importFrom rlang `.data`
 #'
 #' @examples
 #'
@@ -215,12 +216,12 @@ aggregate_time <- function(x,
       if (!is.null(grouping_vars)) {
         for (i in 1:length(grouping_vars)) {
           x <- x %>%
-            group_by(.data[[grouping_vars[i]]], .add = TRUE)
+            dplyr::group_by(.data[[grouping_vars[i]]], .add = TRUE)
         }
       }
 
       # group by year
-      x <- x %>% group_by(jnry_adhoctime, .add = TRUE)
+      x <- x %>% dplyr::group_by(jnry_adhoctime, .add = TRUE)
 
       # collapse data to year level, applying respective transformation
       if (!(aggregation %in% 'count')) {
@@ -231,11 +232,11 @@ aggregate_time <- function(x,
           )
       } else {
         clpsd <- x %>%
-          dplyr::summarise(jnry_count = n())
+          dplyr::summarise(jnry_count = dplyr::n())
       }
 
       # ungroup return data
-      clpsd <- clpsd %>% ungroup()
+      clpsd <- clpsd %>% dplyr::ungroup()
 
       # adjust names to reflect aggregation
       if (!(aggregation %in% 'count')) {
@@ -275,7 +276,7 @@ aggregate_time <- function(x,
                                                 jnry_adhoctime))
       }
       x <- x %>%
-        dplyr::mutate(jnry_adhoctime = ymd(jnry_adhoctime))
+        dplyr::mutate(jnry_adhoctime = lubridate::ymd(jnry_adhoctime))
 
       # remove eventual NAs & report any dropped obs
       if (any(is.na(x$jnry_adhoctime))) {
@@ -290,27 +291,27 @@ aggregate_time <- function(x,
       if (!is.null(grouping_vars)) {
         for (i in 1:length(grouping_vars)) {
           x <- x %>%
-            group_by(.data[[grouping_vars[i]]], .add = TRUE)
+            dplyr::group_by(.data[[grouping_vars[i]]], .add = TRUE)
         }
       }
 
       # group by adhoc timing
-      x <- x %>% group_by(jnry_adhoctime, .add = TRUE)
+      x <- x %>% dplyr::group_by(jnry_adhoctime, .add = TRUE)
 
       # collapse data to adhoc level, applying respective transformation
       if (!(aggregation %in% 'count')) {
         clpsd <- x %>%
-          summarise_if(
+          dplyr::summarise_if(
             .predicate = is.numeric,
             .funs = {{ aggregation }}
           )
       } else {
         clpsd <- x %>%
-          summarise(jnry_count = n())
+          dplyr::summarise(jnry_count = dplyr::n())
       }
 
       # ungroup return data
-      clpsd <- clpsd %>% ungroup()
+      clpsd <- clpsd %>% dplyr::ungroup()
 
       # adjust names to reflect aggregation
       if (!(aggregation %in% 'count')) {
@@ -321,9 +322,9 @@ aggregate_time <- function(x,
       }
 
       # format jnry_adhoctime to match adhoc_granularity
-      if (in_adhoc_gran %in% 'week') clpsd <- clpsd %>% mutate(jnry_adhoctime = format_wk(jnry_adhoctime))
-      if (in_adhoc_gran %in% 'month') clpsd <- clpsd %>% mutate(jnry_adhoctime = format_mo(jnry_adhoctime))
-      if (in_adhoc_gran %in% 'quarter') clpsd <- clpsd %>% mutate(jnry_adhoctime = format_qr(jnry_adhoctime))
+      if (in_adhoc_gran %in% 'week') clpsd <- clpsd %>% dplyr::mutate(jnry_adhoctime = format_wk(jnry_adhoctime))
+      if (in_adhoc_gran %in% 'month') clpsd <- clpsd %>% dplyr::mutate(jnry_adhoctime = format_mo(jnry_adhoctime))
+      if (in_adhoc_gran %in% 'quarter') clpsd <- clpsd %>% dplyr::mutate(jnry_adhoctime = format_qr(jnry_adhoctime))
 
       # return adhoc-time-collapsed data
       return(clpsd)
@@ -349,29 +350,29 @@ aggregate_time <- function(x,
       if (!is.null(grouping_vars)) {
         for (i in 1:length(grouping_vars)) {
           x <- x %>%
-            group_by(.data[[grouping_vars[i]]], .add = TRUE)
+            dplyr::group_by(.data[[grouping_vars[i]]], .add = TRUE)
         }
       }
 
       # group by year
-      x <- x %>% group_by(jnry_year, .add = TRUE)
+      x <- x %>% dplyr::group_by(jnry_year, .add = TRUE)
 
       # collapse data to year level, applying respective transformation
       if (!(aggregation %in% 'count')) {
         clpsd <- x %>%
-          summarise_if(
+          dplyr::summarise_if(
             .predicate = is.numeric,
             .funs = {{ aggregation }}
           )
       } else {
         clpsd <- x %>%
-          summarise(jnry_count = n())
+          dplyr::summarise(jnry_count = dplyr::n())
       }
 
       # if requested, auto-fill time series with NAs
       if (fill_time_series) {
         clpsd <- clpsd %>%
-          right_join(
+          dplyr::right_join(
             clpsd %>%
               stretch_time_agg_NAs(x = x,
                                    granularity = granularity),
@@ -380,7 +381,7 @@ aggregate_time <- function(x,
       }
 
       # ungroup return data
-      clpsd <- clpsd %>% ungroup()
+      clpsd <- clpsd %>% dplyr::ungroup()
 
       # adjust names to reflect aggregation
       if (!(aggregation %in% 'count')) {
@@ -411,29 +412,29 @@ aggregate_time <- function(x,
         # group by each grouping variable
         for (i in 1:length(grouping_vars)) {
           x <- x %>%
-            group_by(.data[[grouping_vars[i]]], .add = TRUE)
+            dplyr::group_by(.data[[grouping_vars[i]]], .add = TRUE)
         }
       }
 
       # group by month
-      x <- x %>% group_by(jnry_quarter, .add = TRUE)
+      x <- x %>% dplyr::group_by(jnry_quarter, .add = TRUE)
 
       # collapse data to month level, applying respective transformation
       if (!(aggregation %in% 'count')) {
         clpsd <- x %>%
-          summarise_if(
+          dplyr::summarise_if(
             .predicate = is.numeric,
             .funs = {{ aggregation }}
           )
       } else {
         clpsd <- x %>%
-          summarise(jnry_count = n())
+          dplyr::summarise(jnry_count = dplyr::n())
       }
 
       # if requested, auto-fill time series with NAs
       if (fill_time_series) {
         clpsd <- clpsd %>%
-          right_join(
+          dplyr::right_join(
             clpsd %>%
               stretch_time_agg_NAs(x = x,
                                    granularity = granularity),
@@ -442,7 +443,7 @@ aggregate_time <- function(x,
       }
 
       # ungroup return data
-      clpsd <- clpsd %>% ungroup()
+      clpsd <- clpsd %>% dplyr::ungroup()
 
       # adjust names to reflect aggregation
       if (!(aggregation %in% 'count')) {
@@ -473,29 +474,29 @@ aggregate_time <- function(x,
         # group by each grouping variable
         for (i in 1:length(grouping_vars)) {
           x <- x %>%
-            group_by(.data[[grouping_vars[i]]], .add = TRUE)
+            dplyr::group_by(.data[[grouping_vars[i]]], .add = TRUE)
         }
       }
 
       # group by month
-      x <- x %>% group_by(jnry_month, .add = TRUE)
+      x <- x %>% dplyr::group_by(jnry_month, .add = TRUE)
 
       # collapse data to month level, applying respective transformation
       if (!(aggregation %in% 'count')) {
         clpsd <- x %>%
-          summarise_if(
+          dplyr::summarise_if(
             .predicate = is.numeric,
             .funs = {{ aggregation }}
           )
       } else {
         clpsd <- x %>%
-          summarise(jnry_count = n())
+          dplyr::summarise(jnry_count = dplyr::n())
       }
 
       # if requested, auto-fill time series with NAs
       if (fill_time_series) {
         clpsd <- clpsd %>%
-          right_join(
+          dplyr::right_join(
             clpsd %>%
               stretch_time_agg_NAs(x = x,
                                    granularity = granularity),
@@ -504,7 +505,7 @@ aggregate_time <- function(x,
       }
 
       # ungroup return data
-      clpsd <- clpsd %>% ungroup()
+      clpsd <- clpsd %>% dplyr::ungroup()
 
       # adjust names to reflect aggregation
       if (!(aggregation %in% 'count')) {
@@ -535,7 +536,7 @@ aggregate_time <- function(x,
         # group by each grouping variable
         for (i in 1:length(grouping_vars)) {
           x <- x %>%
-            group_by(.data[[grouping_vars[i]]], .add = TRUE)
+            dplyr::group_by(.data[[grouping_vars[i]]], .add = TRUE)
         }
       }
 
@@ -545,19 +546,19 @@ aggregate_time <- function(x,
       # collapse data to week level, applying respective transformation
       if (!(aggregation %in% 'count')) {
         clpsd <- x %>%
-          summarise_if(
+          dplyr::summarise_if(
             .predicate = is.numeric,
             .funs = {{ aggregation }}
           )
       } else {
         clpsd <- x %>%
-          summarise(jnry_count = n())
+          dplyr::summarise(jnry_count = dplyr::n())
       }
 
       # if requested, auto-fill time series with NAs
       if (fill_time_series) {
         clpsd <- clpsd %>%
-          right_join(
+          dplyr::right_join(
             clpsd %>%
               stretch_time_agg_NAs(x = x,
                                    granularity = granularity),
@@ -566,7 +567,7 @@ aggregate_time <- function(x,
       }
 
       # ungroup return data
-      clpsd <- clpsd %>% ungroup()
+      clpsd <- clpsd %>% dplyr::ungroup()
 
       # adjust names to reflect aggregation
       if (!(aggregation %in% 'count')) {
@@ -596,7 +597,7 @@ aggregate_time <- function(x,
         # group by each grouping variable
         for (i in 1:length(grouping_vars)) {
           x <- x %>%
-            group_by(.data[[grouping_vars[i]]], .add = TRUE)
+            dplyr::group_by(.data[[grouping_vars[i]]], .add = TRUE)
         }
       }
 
@@ -606,29 +607,29 @@ aggregate_time <- function(x,
       # collapse data to day level, applying respective transformation
       if (!(aggregation %in% 'count')) {
         clpsd <- x %>%
-          summarise_if(
+          dplyr::summarise_if(
             .predicate = is.numeric,
             .funs = {{ aggregation }}
           )
       } else {
         clpsd <- x %>%
-          summarise(jnry_count = n())
+          dplyr::summarise(jnry_count = dplyr::n())
       }
 
       # if requested, auto-fill time series with NAs
       if (fill_time_series) {
         clpsd <- clpsd %>%
-          right_join(
+          dplyr::right_join(
             clpsd %>%
               stretch_time_agg_NAs(x = x,
                                    granularity = granularity) %>%
-              mutate(jnry_day = lubridate::ymd(jnry_day)),
+              dplyr::mutate(jnry_day = lubridate::ymd(jnry_day)),
             by = c(grouping_vars, "jnry_day")
           )
       }
 
       # ungroup return data
-      clpsd <- clpsd %>% ungroup()
+      clpsd <- clpsd %>% dplyr::ungroup()
 
       # adjust names to reflect aggregation
       if (!(aggregation %in% 'count')) {

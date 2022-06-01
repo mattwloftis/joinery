@@ -15,20 +15,20 @@ wrangle_weeks <- function(xx) {
             by = "1 day"
           )
         ) %>%
-          mutate(week = lubridate::isoweek(day))
+          dplyr::mutate(week = lubridate::isoweek(day))
       }
     ) %>%
     dplyr::bind_rows() %>%
-    dplyr::mutate(week = paste0(year(day), "-W",
+    dplyr::mutate(week = paste0(lubridate::year(day), "-W",
                                 stringr::str_pad(string = week,
                                                  width = 2,
                                                  side = 'left',
                                                  pad = "0"))) %>%
     dplyr::group_by(week) %>%
-    dplyr::summarize(day = first(day))
+    dplyr::summarize(day = dplyr::first(day))
 
-  out <- tibble(week = xx) %>%
-    left_join(prep, by = "week")
+  out <- tibble::tibble(week = xx) %>%
+    dplyr::left_join(prep, by = "week")
 
   return(out$day)
 }
