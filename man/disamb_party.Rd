@@ -7,7 +7,7 @@
 disamb_party(x, party_ref, country, year = NULL, origin = NULL)
 }
 \arguments{
-\item{x}{Data frame containing party}
+\item{x}{Data frame in which each observation relates to one political party}
 
 \item{party_ref}{A string identifying the variable in the data, \code{x}, containing political party names or other party identifiers}
 
