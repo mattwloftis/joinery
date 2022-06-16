@@ -22,7 +22,7 @@ wrangle_weeks <- function(xx) {
     dplyr::mutate(week = paste0(lubridate::year(day), "-W",
                                 stringr::str_pad(string = week,
                                                  width = 2,
-                                                 side = 'left',
+                                                 side = "left",
                                                  pad = "0"))) %>%
     dplyr::group_by(week) %>%
     dplyr::summarize(day = dplyr::first(day))

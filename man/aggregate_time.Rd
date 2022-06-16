@@ -8,7 +8,7 @@ aggregate_time(
   x,
   time = NULL,
   grouping_vars = NULL,
-  granularity = c("year", "quarter", "month", "week", "day"),
+  granularity = c("year", "half year", "quarter", "month", "week", "day"),
   adhoc_granularity = NULL,
   aggregation = c("mean", "sum", "max", "min", "median", "count"),
   fill_time_series = FALSE
@@ -34,6 +34,7 @@ If \code{NULL}, data are aggregated without regard to any subgroups in the data.
 \item{granularity}{Target time granularity for aggregated data set. One of:
 \itemize{
 \item \code{year}
+\item \code{half year}
 \item \code{quarter}
 \item \code{month}
 \item \code{week}
@@ -83,6 +84,8 @@ appropriately formatted time in a variable titled "jnry_(time)", i.e.:
 
 \itemize{
 \item \strong{year} - \code{jnry_year} - ISO calendar year basic format (e.g. 2022)
+\item \strong{half year} - \code{jnry_halfyr} - sortable half year format (e.g. 2022-H1)
+\item \strong{quarter} - \code{jnry_quarter} - sortable quarter format (e.g. 2022-Q2)
 \item \strong{month} - \code{jnry_month} - ISO calendar month basic format (e.g. 2022-05)
 \item \strong{week} - \code{jnry_week} - ISO calendar week extended format (e.g. 2022-W25)
 \item \strong{day} - \code{jnry_day} - ISO calendar date extended format (e.g. 2022-05-03)

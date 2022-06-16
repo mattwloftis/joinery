@@ -15,6 +15,9 @@ determine_granularity <- function(xx) {
   # quarter
   if (all(stringr::str_detect(xx, "\\d{4}-Q\\d"))) return("quarter")
 
+  # half year
+  if (all(stringr::str_detect(xx, "\\d{4}-H\\d"))) return("half year")
+
   # year
-  if (all(stringr::str_length(xx) == 4) & all(is.numeric(xx))) return("year")
+  if (all(stringr::str_length(xx) == 4) && all(is.numeric(xx))) return("year")
 }

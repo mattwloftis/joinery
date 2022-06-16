@@ -8,10 +8,11 @@ stretch_pf <- function(xx) {
                   tidyselect::starts_with("year"),
                   wikipedia) %>%
     dplyr::mutate(year_last = ifelse(is.na(year_last),
-                              as.numeric(
-                                stringr::str_extract(Sys.Date(), "^\\d{4}")
-                                ),
-                              year_last)) %>%
+                                     as.numeric(
+                                       stringr::str_extract(Sys.Date(),
+                                                            "^\\d{4}")
+                                     ),
+                                     year_last)) %>%
     purrr::array_branch(margin = 1) %>%
     purrr::map(
       function(k) {
@@ -23,11 +24,13 @@ stretch_pf <- function(xx) {
 
   return(
     purrr::map(l_pf,
-        function(k) {
-          k %>%
-            dplyr::mutate(jnry_year = list(.data$year_first:.data$year_last)) %>%
-            tidyr::unnest(jnry_year)
-        }
+               function(k) {
+                 k %>%
+                   dplyr::mutate(
+                     jnry_year = list(.data$year_first:.data$year_last)
+                   ) %>%
+                   tidyr::unnest(jnry_year)
+               }
     ) %>%
       dplyr::bind_rows() %>%
       dplyr::mutate(partyfacts_id = as.numeric(partyfacts_id)) %>%

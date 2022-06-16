@@ -3,25 +3,25 @@
 
 series_month <- function(first, last) {
 
-  first.yr <- first %>%
+  first_yr <- first %>%
     stringr::str_split("-") %>%
     unlist() %>%
     `[`(1) %>%
     as.numeric()
 
-  last.yr <- last %>%
+  last_yr <- last %>%
     stringr::str_split("-") %>%
     unlist() %>%
     `[`(1) %>%
     as.numeric()
 
-  first.mo <- first %>%
+  first_mo <- first %>%
     stringr::str_split("-") %>%
     unlist() %>%
     `[`(2) %>%
     as.numeric()
 
-  last.mo <- last %>%
+  last_mo <- last %>%
     stringr::str_split("-") %>%
     unlist() %>%
     `[`(2) %>%
@@ -29,33 +29,33 @@ series_month <- function(first, last) {
 
   series <- character(0)
 
-  inner.years <- (1 + first.yr):(last.yr - 1)
+  inner_years <- (1 + first_yr):(last_yr - 1)
 
-  for (mo in first.mo:12) {
+  for (mo in first_mo:12) {
     series <- c(series,
-                paste0(first.yr, "-",
+                paste0(first_yr, "-",
                        stringr::str_pad(string = mo,
                                         width = 2,
-                                        side = 'left',
-                                        pad = '0')))
+                                        side = "left",
+                                        pad = "0")))
   }
 
-  for (yr in inner.years) {
+  for (yr in inner_years) {
     series <- c(series,
                 paste0(yr, "-",
                        stringr::str_pad(string = 1:12,
                                         width = 2,
-                                        side = 'left',
-                                        pad = '0')))
+                                        side = "left",
+                                        pad = "0")))
   }
 
-  for (mo in 1:last.mo) {
+  for (mo in 1:last_mo) {
     series <- c(series,
-                paste0(last.yr, "-",
+                paste0(last_yr, "-",
                        stringr::str_pad(string = mo,
                                         width = 2,
-                                        side = 'left',
-                                        pad = '0')))
+                                        side = "left",
+                                        pad = "0")))
   }
 
   return(series)

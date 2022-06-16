@@ -8,4 +8,4 @@ utils::globalVariables(c("day", "week", "jnry_day", "jnry_time_last",
                          "jnry_country", "year_last", "year_first",
                          "partyfacts_id", "opn", "match_exact",
                          "match_heur", "jnry_match", "wikipedia",
-                         "match_fuzzy", "yrs", "country"))
+                         "match_fuzzy", "yrs", "country", "jnry_halfyr"))

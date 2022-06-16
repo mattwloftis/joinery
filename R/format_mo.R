@@ -6,8 +6,8 @@ format_mo <- function(xx) {
                "-",
                stringr::str_pad(string = lubridate::month(xx),
                        width = 2,
-                       side = 'left',
-                       pad = '0'))
+                       side = "left",
+                       pad = "0"))
 
   return(xx)
 }

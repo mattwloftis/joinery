@@ -15,10 +15,10 @@ series_quarter <- function(first, last) {
       qs = rep(1:4, times = length(unique(yrs)))
     )
 
-  too.early <- (helper$yrs == fyear) & (helper$qs < fq)
-  too.late <- (helper$yrs == lyear) & (helper$qs > lq)
+  too_early <- (helper$yrs == fyear) & (helper$qs < fq)
+  too_late <- (helper$yrs == lyear) & (helper$qs > lq)
 
-  helper <- helper %>% dplyr::filter(!too.early & !too.late)
+  helper <- helper %>% dplyr::filter(!too_early & !too_late)
 
   series <- paste0(helper$yrs, "-Q", helper$qs)
 

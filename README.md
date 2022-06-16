@@ -10,7 +10,7 @@
 text) data used in political science research. `joinery` can help with
 the following common tasks:
 
--   check and cleans common identifiers like country names, political
+-   check and clean common identifiers like country names, political
     party names, names of institutions, etc.
 -   aggregate or disaggregate the input datasets
 -   execute joins
