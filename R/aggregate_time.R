@@ -283,12 +283,15 @@ aggregate_time <- function(x,
 
       # adjust names to reflect aggregation
       if (!(aggregation %in% "count")) {
-        names(clpsd)[!(names(clpsd) %in% c("jnry_adhoctime",
-                                           grouping_vars))] <- paste0(
-                                             names(clpsd)[!(names(clpsd) %in% c("jnry_adhoctime", grouping_vars))],
-                                             "_",
-                                             aggregation
-                                           )
+        names(clpsd)[!(names(clpsd) %in%
+                         c("jnry_adhoctime",
+                           grouping_vars))] <- paste0(
+                             names(clpsd)[!(names(clpsd) %in%
+                                              c("jnry_adhoctime",
+                                                grouping_vars))],
+                             "_",
+                             aggregation
+                           )
       }
 
       # return adhoc-time-collapsed data
@@ -366,10 +369,14 @@ aggregate_time <- function(x,
 
       # adjust names to reflect aggregation
       if (!(aggregation %in% "count")) {
-        names(clpsd)[!(names(clpsd) %in% c("jnry_adhoctime", grouping_vars))] <- paste0(
-          names(clpsd)[!(names(clpsd) %in% c("jnry_adhoctime", grouping_vars))],
-          "_",
-          aggregation)
+        names(clpsd)[!(names(clpsd) %in%
+                         c("jnry_adhoctime",
+                           grouping_vars))] <- paste0(
+                             names(clpsd)[!(names(clpsd) %in%
+                                              c("jnry_adhoctime",
+                                                grouping_vars))],
+                             "_",
+                             aggregation)
       }
 
       # format jnry_adhoctime to match adhoc_granularity
@@ -438,10 +445,15 @@ aggregate_time <- function(x,
 
       # adjust names to reflect aggregation
       if (!(aggregation %in% "count")) {
-        names(clpsd)[!(names(clpsd) %in% c("jnry_year", grouping_vars))] <- paste0(
-          names(clpsd)[!(names(clpsd) %in% c("jnry_year", grouping_vars))],
-          "_",
-          aggregation)
+        names(clpsd)[!(names(clpsd) %in%
+                         c("jnry_year",
+                           grouping_vars))] <- paste0(
+                             names(clpsd)[!(names(clpsd) %in%
+                                              c("jnry_year",
+                                                grouping_vars))],
+                             "_",
+                             aggregation
+                           )
       }
 
       # return annualized data
@@ -492,10 +504,15 @@ aggregate_time <- function(x,
 
       # adjust names to reflect aggregation
       if (!(aggregation %in% "count")) {
-        names(clpsd)[!(names(clpsd) %in% c("jnry_year", grouping_vars))] <- paste0(
-          names(clpsd)[!(names(clpsd) %in% c("jnry_year", grouping_vars))],
-          "_",
-          aggregation)
+        names(clpsd)[!(names(clpsd) %in%
+                         c("jnry_halfyr",
+                           grouping_vars))] <- paste0(
+                             names(clpsd)[!(names(clpsd) %in%
+                                              c("jnry_halfyr",
+                                                grouping_vars))],
+                             "_",
+                             aggregation
+                           )
       }
 
       # return annualized data
@@ -550,10 +567,15 @@ aggregate_time <- function(x,
 
       # adjust names to reflect aggregation
       if (!(aggregation %in% "count")) {
-        names(clpsd)[!(names(clpsd) %in% c("jnry_quarter", grouping_vars))] <- paste0(
-          names(clpsd)[!(names(clpsd) %in% c("jnry_quarter", grouping_vars))],
-          "_",
-          aggregation)
+        names(clpsd)[!(names(clpsd) %in%
+                         c("jnry_quarter",
+                           grouping_vars))] <- paste0(
+                             names(clpsd)[!(names(clpsd) %in%
+                                              c("jnry_quarter",
+                                                grouping_vars))],
+                             "_",
+                             aggregation
+                           )
       }
 
       # return quarterly data
@@ -608,10 +630,15 @@ aggregate_time <- function(x,
 
       # adjust names to reflect aggregation
       if (!(aggregation %in% "count")) {
-        names(clpsd)[!(names(clpsd) %in% c("jnry_month", grouping_vars))] <- paste0(
-          names(clpsd)[!(names(clpsd) %in% c("jnry_month", grouping_vars))],
-          "_",
-          aggregation)
+        names(clpsd)[!(names(clpsd) %in%
+                         c("jnry_month",
+                           grouping_vars))] <- paste0(
+                             names(clpsd)[!(names(clpsd) %in%
+                                              c("jnry_month",
+                                                grouping_vars))],
+                             "_",
+                             aggregation
+                           )
       }
 
       # return monthly data
@@ -625,8 +652,13 @@ aggregate_time <- function(x,
     ##---------------------------------------------------------##
     if (granularity == "week") {
       ## sanity check requested aggregation
-      if (incoming_gran %in% c("year", "quarter", "month")) stop("Data time granularity must be finer than requested time granularity.")
-      if (incoming_gran %in% "week") stop("Data time granularity is already week.")
+      if (incoming_gran %in% c("year", "quarter", "month")) {
+        stop("Data time granularity must be finer than requested
+             time granularity.")
+      }
+      if (incoming_gran %in% "week") {
+        stop("Data time granularity is already week.")
+      }
 
       # set joinery week
       x[["jnry_week"]] <- x[[time]] %>% format_wk()
@@ -661,10 +693,15 @@ aggregate_time <- function(x,
 
       # adjust names to reflect aggregation
       if (!(aggregation %in% "count")) {
-        names(clpsd)[!(names(clpsd) %in% c("jnry_week", grouping_vars))] <- paste0(
-          names(clpsd)[!(names(clpsd) %in% c("jnry_week", grouping_vars))],
-          "_",
-          aggregation)
+        names(clpsd)[!(names(clpsd) %in%
+                         c("jnry_week",
+                           grouping_vars))] <- paste0(
+                             names(clpsd)[!(names(clpsd) %in%
+                                              c("jnry_week",
+                                                grouping_vars))],
+                             "_",
+                             aggregation
+                           )
       }
 
       # return weekly data
@@ -678,7 +715,10 @@ aggregate_time <- function(x,
     ##---------------------------------------------------------##
     if (granularity == "day") {
       ## sanity check requested aggregation
-      if (incoming_gran %in% c("year", "quarter", "month", "week")) stop("Data time granularity must be finer than requested time granularity.")
+      if (incoming_gran %in% c("year", "quarter", "month", "week")) {
+        stop("Data time granularity must be finer than requested
+             time granularity.")
+      }
 
       # set joinery day
       x[["jnry_day"]] <- lubridate::as_date(x[[time]])
@@ -714,10 +754,15 @@ aggregate_time <- function(x,
 
       # adjust names to reflect aggregation
       if (!(aggregation %in% "count")) {
-        names(clpsd)[!(names(clpsd) %in% c("jnry_day", grouping_vars))] <- paste0(
-          names(clpsd)[!(names(clpsd) %in% c("jnry_day", grouping_vars))],
-          "_",
-          aggregation)
+        names(clpsd)[!(names(clpsd) %in%
+                         c("jnry_day",
+                           grouping_vars))] <- paste0(
+                             names(clpsd)[!(names(clpsd) %in%
+                                              c("jnry_day",
+                                                grouping_vars))],
+                             "_",
+                             aggregation
+                           )
       }
 
       # return daily data
@@ -727,7 +772,9 @@ aggregate_time <- function(x,
 }
 ## to be added to documentation later if group-wise adhoc granularities
 ## are added to the functionality
-# If \code{grouping_vars} are provided, then this must be a data frame or tibble
-# including \code{grouping_vars} and their respective ad-hoc time aggregation points.
-# The variable containing the ad-hoc time granularity should have the same name
-# as \code{time}.
+# If \code{grouping_vars} are provided, then this must be a
+# data frame or tibble
+# including \code{grouping_vars} and their respective ad-hoc time
+# aggregation points.
+# The variable containing the ad-hoc time granularity should have the
+# same name as \code{time}.

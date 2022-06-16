@@ -21,15 +21,18 @@ aggregate_time(
 containing the date/time of observations. Time variable must be one of:
 \itemize{
 \item \code{Date} object (date or datetime)
-\item \code{character} object in ISO calendar month basic format (e.g. 2022-05)
-\item \code{character} object in ISO calendar week extended format (e.g. 2022-W25)
+\item \code{character} object in ISO calendar month basic format
+(e.g. 2022-05)
+\item \code{character} object in ISO calendar week extended format
+(e.g. 2022-W25)
 \item \code{character} object with years and quarters (i.e. 2022-Q2)
 }}
 
 \item{grouping_vars}{A string or vector of strings identifying the variables
 in the data, \code{x}, containing groups by which time should be aggregated.
 
-If \code{NULL}, data are aggregated without regard to any subgroups in the data.}
+If \code{NULL}, data are aggregated without regard to any subgroups in the
+data.}
 
 \item{granularity}{Target time granularity for aggregated data set. One of:
 \itemize{
@@ -50,14 +53,17 @@ granularity desired for the aggregation. Provide only the unique time points
 for aggregation. Accepted formats are:
 \itemize{
 \item \code{Date} object (date or datetime)
-\item \code{character} object in ISO calendar month basic format (e.g. 2022-05)
-\item \code{character} object in ISO calendar week extended format (e.g. 2022-W25)
+\item \code{character} object in ISO calendar month basic format
+(e.g. 2022-05)
+\item \code{character} object in ISO calendar week extended format
+(e.g. 2022-W25)
 \item \code{numeric} four-digit year
 }
 Observations are aggregated to the nearest past time point. For example, if
 the adhoc granularity includes \code{c(1999, 2004, 2012)}, the years 1999,
 2000, 2001, 2002, and 2003 are aggregated to 1999, the years 2004-2011
-are aggregated to 2004, and observations at or after 2012 are aggregated to 2012.}
+are aggregated to 2004, and observations at or after 2012 are aggregated to
+2012.}
 
 \item{aggregation}{Aggregation function applied when collapsing observations
 to the time granularity specified in \code{granularity}. One of:
@@ -66,7 +72,8 @@ to the time granularity specified in \code{granularity}. One of:
 \item \code{sum} - sum all numeric variables by group and time
 \item \code{max} - find maximum of each numeric variable by group and time
 \item \code{min} - find minimum of each numeric variable by group and time
-\item \code{median} - find median of each numeric variable by group and time
+\item \code{median} - find median of each numeric variable by group and
+time
 \item \code{count} - count the number of observations by group and time
 }}
 
@@ -83,13 +90,20 @@ Depending on the time granularity chosen, \code{aggregate_time} returns the
 appropriately formatted time in a variable titled "jnry_(time)", i.e.:
 
 \itemize{
-\item \strong{year} - \code{jnry_year} - ISO calendar year basic format (e.g. 2022)
-\item \strong{half year} - \code{jnry_halfyr} - sortable half year format (e.g. 2022-H1)
-\item \strong{quarter} - \code{jnry_quarter} - sortable quarter format (e.g. 2022-Q2)
-\item \strong{month} - \code{jnry_month} - ISO calendar month basic format (e.g. 2022-05)
-\item \strong{week} - \code{jnry_week} - ISO calendar week extended format (e.g. 2022-W25)
-\item \strong{day} - \code{jnry_day} - ISO calendar date extended format (e.g. 2022-05-03)
-\item \strong{\emph{adhoc}} - \code{jnry_adhoctimetime} - format taken from user input
+\item \strong{year} - \code{jnry_year} - ISO calendar year basic format
+(e.g. 2022)
+\item \strong{half year} - \code{jnry_halfyr} - sortable half year format
+(e.g. 2022-H1)
+\item \strong{quarter} - \code{jnry_quarter} - sortable quarter format
+(e.g. 2022-Q2)
+\item \strong{month} - \code{jnry_month} - ISO calendar month basic format
+(e.g. 2022-05)
+\item \strong{week} - \code{jnry_week} - ISO calendar week extended format
+(e.g. 2022-W25)
+\item \strong{day} - \code{jnry_day} - ISO calendar date extended format
+(e.g. 2022-05-03)
+\item \strong{\emph{adhoc}} - \code{jnry_adhoctimetime} - format taken
+from user input
 }
 }
 

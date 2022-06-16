@@ -58,7 +58,10 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL) {
   if (!(is.atomic(party_ref) &&
         length(party_ref) == 1L) &&
       is.character(party_ref) &&
-      (party_ref %in% names(x))) stop("party_ref must be a string identifying the variable in the data containing the political party names or other party identifiers")
+      (party_ref %in% names(x))) {
+    stop("party_ref must be a string identifying the variable in the data
+         containing the political party names or other party identifiers")
+  }
 
 
   #############################################################
@@ -66,10 +69,18 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL) {
 
   # country is a single string or vector of strings (length = nrow(x))
   if (!(is.atomic(country) &&
-        is.character(country))) stop("country must be a string identifying the country of the data or a vector of strings identifying the country of each observation in the data.")
+        is.character(country))) {
+    stop("country must be a string identifying the country of the data
+         or a vector of strings identifying the country of each observation
+         in the data.")
+  }
 
   if (!xor(length(country) == 1L,
-           length(country) == nrow(x))) stop("country must be a string identifying the country of the data or a vector of strings identifying the country of each observation in the data.")
+           length(country) == nrow(x))) {
+    stop("country must be a string identifying the country of the data
+         or a vector of strings identifying the country of each observation
+         in the data.")
+  }
 
 
   #############################################################
@@ -78,7 +89,8 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL) {
   # CASE: vector
   # if year is numeric vector, catch incorrect length (i.e. length != nrow(x))
   if (length(year) > 1 && (length(year) != nrow(x))) {
-    stop("If year is a vector, it must be the same length as the number of rows in the data")
+    stop("If year is a vector, it must be the same length as the number
+         of rows in the data")
   }
 
 
@@ -236,7 +248,12 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL) {
             tibble::tibble(
               cc_row = which(ctry_mtchs %>%
                                purrr::map_lgl(function(xx) length(xx) > 0)),
-              mrg_country = toresolve_cn[unlist(ctry_mtchs[ctry_mtchs %>% purrr::map_lgl(function(xx) length(xx) > 0)])]
+              mrg_country = toresolve_cn[
+                unlist(
+                  ctry_mtchs[ctry_mtchs %>%
+                               purrr::map_lgl(function(xx) length(xx) > 0)]
+                  )
+                ]
             ) %>%
               dplyr::add_row(
                 cc_row = purrr::map_int(
@@ -247,20 +264,28 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL) {
                 ),
                 mrg_country = resolved_cn
               ) %>%
-              dplyr::mutate(jnry_country = countrycode::codelist$iso3c[cc_row]) %>%
+              dplyr::mutate(
+                jnry_country = countrycode::codelist$iso3c[cc_row]
+              ) %>%
               dplyr::select(-cc_row),
             by = "mrg_country"
           ) %>%
           # fix dumb N.Ireland issue
           dplyr::mutate(
             jnry_country = ifelse(
-              mrg_country %>% stringr::str_detect(stringr::regex("northern ireland", ignore_case = TRUE)),
+              mrg_country %>%
+                stringr::str_detect(
+                  stringr::regex("northern ireland", ignore_case = TRUE)
+                ),
               "GBR",
               jnry_country
             ),
             # fix stupid East Germany issue... (maybe this shouldn't be hard-coded?)
             jnry_country = ifelse(
-              mrg_country %>% stringr::str_detect(stringr::regex("german", ignore_case = TRUE)),
+              mrg_country %>%
+                stringr::str_detect(
+                  stringr::regex("german", ignore_case = TRUE)
+                ),
               "DEU",
               jnry_country
             )) %>%
@@ -408,7 +433,8 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL) {
     year <- x[[year]]
 
     # deal with 'Date' format years
-    if (lubridate::is.instant(year)) year <- lubridate::year(year) %>% as.numeric
+    if (lubridate::is.instant(year)) year <- lubridate::year(year) %>%
+      as.numeric
 
     # catch years not four digits
     if (!is.numeric(year) || !all(stringr::str_length(year) == 4)) {
@@ -432,12 +458,13 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL) {
 
   # should we use a finer-grained date instead of year????
   # after all, parties can change names during a year...
-  # this is not that much an edge case, tho it depends on the data's time granularity
+  # this is not that much an edge case, tho it depends on the
+  # data's time granularity
   # ---to resolve later---
-  # NB: argument against more finely grained time var: Party Facts is annualized
+  # NB: argument against more fine grained time var: Party Facts is annualized
   # So, after all, what would be the point?
-  # This raises the question, tho: are there instances of overlap in the Party Facts data?
-  # i.e. cases in which a party AND its renamed successor both appear in the same year?
+  # This raises question, tho: are there instances of overlap in Party Facts?
+  # i.e. cases in which party AND its renamed successor both appear in a year?
   # again, to be resolved later -- perhaps via testing PF data
 
 
@@ -459,7 +486,7 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL) {
   #   1) pull in *latest* CORE PartyFacts parties
   #   2) filter to countries in target data
   #   3) filter to years (potentially) relevant to target data
-  #   4) stretch years (i.e. from PF "from-->to" format to one row per year * party)
+  #   4) stretch years (i.e. from PF "from-->to" format to 1 row: year * party)
   pfcp <- utils::read.csv(
     file = "https://partyfacts.herokuapp.com/download/core-parties-csv/",
     encoding = "UTF-8"
@@ -638,7 +665,8 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL) {
       }
 
       # roll EXACT matches into 'cons_refs'
-      pf_mtch_vars <- c("jnry_country", "jnry_year", best_pf_name_var, "partyfacts_id")
+      pf_mtch_vars <- c("jnry_country", "jnry_year",
+                        best_pf_name_var, "partyfacts_id")
 
       cons_refs <- cons_refs %>%
         dplyr::left_join(
@@ -810,7 +838,8 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL) {
         `>`(0)
 
       # dummy for **heuristic** matches
-      cons_refs <- cons_refs %>% dplyr::mutate(match_heur = (has_pfcp_name & !match_exact))
+      cons_refs <- cons_refs %>%
+        dplyr::mutate(match_heur = (has_pfcp_name & !match_exact))
 
       # split-merge-restack 'cons_refs' to get PF ids for heuristic matches
       # exact- & non-matched cases
@@ -850,7 +879,10 @@ disamb_party <- function(x, party_ref, country, year = NULL, origin = NULL) {
       } else {
 
         # Error for apparently impossible case of zero-length 'cr_name_fields'
-        if (length(cr_name_fields) == 0) stop("Error in executing heuristic matching.") # Will I ever see this error? Seems impossible...
+        if (length(cr_name_fields) == 0) {
+          # Will I ever see this error? Seems impossible...
+          stop("Error in executing heuristic matching.")
+        }
 
         # gen list for loop output
         party_to_match <- list()

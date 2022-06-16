@@ -3,7 +3,7 @@
 
 series_week <- function(first, last) {
 
-  int <- c(first, first + (1:(last - first)))
+  int <- first + 0:(last - first)
 
   series <- int %>%
     format_wk() %>%
